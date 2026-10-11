@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Check, Sparkles, Shield, ArrowRight, Crown, MonitorSmartphone } from 'lucide-react';
-import { OrderIcon } from './OrderIcon';
+import { Shield, Crown } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppIcon';
 import {
   PLAN_DURATIONS,
@@ -57,13 +56,6 @@ const AnimatedPrice: React.FC<{ value: number }> = ({ value }) => (
   <>{formatEuro(useAnimatedNumber(value))}</>
 );
 
-/** Feeds the pointer position to the card so its spotlight follows the cursor or finger. */
-const trackPointer = (event: React.PointerEvent<HTMLDivElement>) => {
-  const rect = event.currentTarget.getBoundingClientRect();
-  event.currentTarget.style.setProperty('--mx', `${event.clientX - rect.left}px`);
-  event.currentTarget.style.setProperty('--my', `${event.clientY - rect.top}px`);
-};
-
 export const PricingSection: React.FC<PricingSectionProps> = ({
   lang,
   onSelectPlan,
@@ -72,27 +64,8 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const [tierId, setTierId] = useState<PlanTierId>(DEFAULT_PLAN.tier);
   const [devices, setDevices] = useState<number>(DEFAULT_PLAN.devices);
 
-  // The cards play their entrance once the pricing stage scrolls into view.
-  const stageRef = useRef<HTMLDivElement>(null);
-  const [inView, setInView] = useState(false);
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') {
-      setInView(true);
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.12 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  // Phones show the first few benefits until asked for the rest.
+  const [allShown, setAllShown] = useState(false);
 
   const t = {
     nl: {
@@ -108,6 +81,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       deviceLower: 'apparaat',
       devicesLower: 'apparaten',
       perMonth: 'per maand',
+      thatIs: 'Dat is',
+      choose: 'Kies dit pakket',
+      allBenefits: (count: number) => `Alle ${count} voordelen bekijken`,
       included: 'inbegrepen',
       order: 'Bestel Nu',
       orderVip: 'Word VIP Nu',
@@ -134,6 +110,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       deviceLower: 'device',
       devicesLower: 'devices',
       perMonth: 'per month',
+      thatIs: 'That is',
+      choose: 'Choose this package',
+      allBenefits: (count: number) => `See all ${count} benefits`,
       included: 'included',
       order: 'Order Now',
       orderVip: 'Go VIP Now',
@@ -160,6 +139,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       deviceLower: 'Gerät',
       devicesLower: 'Geräte',
       perMonth: 'pro Monat',
+      thatIs: 'Das sind',
+      choose: 'Dieses Paket wählen',
+      allBenefits: (count: number) => `Alle ${count} Vorteile ansehen`,
       included: 'inklusive',
       order: 'Jetzt bestellen',
       orderVip: 'Jetzt VIP werden',
@@ -180,301 +162,130 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const deviceLabel = `${devices} ${devices === 1 ? t.deviceLower : t.devicesLower}`;
 
   return (
-    <section id="prijzen" className="fluid-light py-16 lg:py-24 border-b border-[#dbe8df]">
+    <section id="prijzen" className="pk-section fluid-light py-16 lg:py-24 border-b border-[#dbe8df]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div data-reveal className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e2f0e7] border border-[#c9ddd0] text-[11px] font-semibold tracking-wider text-[#1e4834] uppercase mb-3">
-            <span>{t.tag}</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-[#0c2017] font-display [text-wrap:balance]">
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-display [text-wrap:balance]">
             {t.titleStart}
             <span className="text-fluid-deep">{t.titleAccent}</span>
             {t.titleEnd}
           </h2>
-          <p className="mt-3 text-base text-[#24402f] leading-relaxed">{t.subtitle}</p>
+          <p className="pk-lead mt-4 text-lg sm:text-xl leading-relaxed">{t.subtitle}</p>
         </div>
 
-        {/* Tier toggle */}
-        <div data-reveal="zoom" className="flex justify-center mb-3">
-          <div className="grid grid-cols-2 w-full max-w-md p-1.5 rounded-2xl bg-white border border-[#dbe8df] shadow-sm">
-            {TIER_IDS.map((id) => {
-              const active = id === tierId;
-              const premium = id === 'premium';
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setTierId(id)}
-                  aria-pressed={active}
-                  className={`px-4 py-3 rounded-xl font-display font-extrabold text-sm sm:text-base transition-all flex items-center justify-center gap-2 cursor-pointer ${
-                    active
-                      ? premium
-                        ? 'bg-[#0b1f15] text-[#f3dfb4] shadow-lg ring-1 ring-[#d6bf96]/60'
-                        : 'bg-fluid-btn shadow-md'
-                      : 'text-[#24402f] hover:text-[#0c2017] hover:bg-[#f1f7f3]'
-                  }`}
-                >
-                  {premium && (
-                    <Crown className={`w-4 h-4 ${active ? 'text-[#d6bf96]' : 'text-[#b8964f]'}`} />
-                  )}
-                  <span>{t.tiers[id]}</span>
+        <div className="pk">
+          {/* Pack and number of screens */}
+          <div className="pk-ctl">
+            <div className="pk-seg">
+              {TIER_IDS.map((id) => (
+                <button key={id} type="button" onClick={() => setTierId(id)} aria-pressed={id === tierId}>
+                  {id === 'premium' && <Crown className="w-4 h-4" />}
+                  {t.tiers[id]}
                 </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Device count selector */}
-        <div data-reveal="zoom" style={{ '--reveal-delay': '120ms' } as React.CSSProperties} className="flex justify-center mb-10 sm:mb-12">
-          <div className="grid grid-cols-4 w-full max-w-md sm:max-w-xl p-1.5 rounded-2xl bg-white border border-[#dbe8df] shadow-sm">
-            {DEVICE_OPTIONS.map((count) => {
-              const active = count === devices;
-              return (
+              ))}
+            </div>
+            <div className="pk-seg">
+              {DEVICE_OPTIONS.map((count) => (
                 <button
                   key={count}
                   type="button"
                   onClick={() => setDevices(count)}
-                  aria-pressed={active}
+                  aria-pressed={count === devices}
                   aria-label={`${count} ${count === 1 ? t.device : t.devices}`}
-                  className={`px-2 py-2.5 rounded-xl font-display font-extrabold text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
-                    active
-                      ? 'bg-fluid-btn shadow-md'
-                      : 'text-[#24402f] hover:text-[#0c2017] hover:bg-[#f1f7f3]'
-                  }`}
                 >
-                  <MonitorSmartphone className="w-4 h-4 shrink-0" />
-                  <span>{count}</span>
-                  <span className="hidden sm:inline">{count === 1 ? t.device : t.devices}</span>
+                  {count}
+                  {count === devices && ` ${count === 1 ? t.deviceLower : t.devicesLower}`}
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Premium VIP gets its own dark, gold-trimmed stage */}
-        <div
-          ref={stageRef}
-          className={`relative max-w-6xl mx-auto transition-all duration-500 ${
-            isPremium
-              ? 'vip-card rounded-[1.75rem] sm:rounded-[2rem] p-3.5 sm:p-6 lg:p-8 border border-[#d6bf96]/40 shadow-2xl shadow-green-950/40'
-              : ''
-          }`}
-        >
-          {/* Projector beams */}
-          {isPremium && (
-            <div
-              className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none"
-              aria-hidden="true"
-            >
-              <div className="cine-beam left-[4%]" />
-              <div className="cine-beam cine-beam-green right-[4%]" />
-            </div>
-          )}
-
-          {isPremium && (
-            <div
-              key="vip-head"
-              className={`relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 sm:px-2 pb-6 ${
-                inView ? 'pack-rise' : 'pack-wait'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span className="flex w-11 h-11 items-center justify-center rounded-2xl bg-gold-btn shadow-lg shadow-amber-200/20">
-                  <Crown className="w-5 h-5 text-[#0c2017]" />
-                </span>
-                <div>
-                  <div className="text-lg sm:text-xl font-extrabold font-display text-gold">
-                    {tier.name[lang]}
-                  </div>
-                  <div className="text-xs text-[#c3dccf]">{t.vipTagline}</div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 text-[11px] font-bold text-[#f6e7c3]">
-                {t.vipPerks.map((perk) => (
-                  <span
-                    key={perk}
-                    className="px-2.5 py-1 rounded-full bg-[#d6bf96]/15 border border-[#d6bf96]/40"
-                  >
-                    {perk}
+          {/* Premium VIP gets a stage of its own */}
+          <div className={`pk-stage ${isPremium ? 'pk-vip' : 'pk-basis'}`}>
+            {isPremium && (
+              <>
+                <div className="pk-head">
+                  <span className="pk-crown">
+                    <Crown className="w-8 h-8" />
                   </span>
-                ))}
-              </div>
-            </div>
-          )}
+                  <div>
+                    <h3>{t.tiers.premium}</h3>
+                    <p>{t.vipTagline}</p>
+                  </div>
+                </div>
+                <div className="pk-perks">
+                  {t.vipPerks.map((perk) => (
+                    <span key={perk}>{perk}</span>
+                  ))}
+                </div>
+              </>
+            )}
 
-          {/* 3 looptijd cards */}
-          <div className="relative grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-6 items-stretch pt-3 lg:pt-0">
-            {PLAN_DURATIONS.map((duration, idx) => {
-              const price = getPlanPrice(tierId, duration.id, devices);
-              const monthly = getMonthlyPrice(tierId, duration.id, devices);
-              const isBest = Boolean(duration.note);
-              const dark = isPremium;
-
-              const cardClass = isPremium
-                ? isBest
-                  ? 'bg-gradient-to-b from-[#1a4430] to-[#0b1f15] text-white border border-transparent shadow-2xl shadow-amber-200/15'
-                  : 'bg-[#11281c]/90 text-white border border-white/15 hover:border-[#d6bf96]/60 backdrop-blur-sm shadow-lg shadow-black/30'
-                : isBest
-                ? 'bg-white text-[#0c2017] border border-transparent shadow-xl shadow-green-700/15'
-                : 'bg-white text-[#0c2017] border border-[#cfe3d5] hover:border-[#16a34a] shadow-sm hover:shadow-xl hover:shadow-green-700/10';
-
-              return (
-                <div
-                  // Re-keyed on tier so switching Basis ↔ Premium VIP replays the entrance.
-                  key={`${tierId}-${duration.id}`}
-                  className={`${inView ? 'pack-rise' : 'pack-wait'} ${
-                    isBest ? 'lg:-mt-2 lg:mb-2' : ''
-                  }`}
-                  style={{ '--d': `${120 + idx * 140}ms` } as React.CSSProperties}
-                >
-                  <div
-                    onPointerMove={trackPointer}
-                    className={`pack-card relative h-full rounded-3xl p-6 sm:p-8 flex flex-col justify-between ${cardClass}`}
-                    style={
-                      {
-                        '--spot': dark ? 'rgba(243, 223, 180, 0.16)' : 'rgba(34, 197, 94, 0.14)',
-                        '--ring-a': dark ? '#f3dfb4' : '#16a34a',
-                        '--ring-b': dark ? '#22c55e' : '#d6bf96',
-                      } as React.CSSProperties
-                    }
-                  >
-                    {/* Reactive layers */}
-                    {isBest && <div className="pack-ring" aria-hidden="true" />}
-                    <div className="pack-spot" aria-hidden="true" />
-                    {isBest && (
-                      <div
-                        className="absolute inset-0 rounded-[inherit] overflow-hidden pointer-events-none"
-                        aria-hidden="true"
-                      >
-                        <div className="pack-shine" />
-                      </div>
-                    )}
-
-                    {/* Best deal pill */}
-                    {isBest && duration.note && (
-                      <div
-                        className={`absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-[11px] font-extrabold tracking-wider uppercase shadow-md flex items-center gap-1.5 whitespace-nowrap z-10 ${
-                          isPremium ? 'bg-gold-btn text-[#0c2017]' : 'bg-fluid-btn'
-                        }`}
-                      >
-                        <Sparkles className="w-3.5 h-3.5" />
-                        <span>
-                          {duration.note[lang]} · {duration.badge}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="relative">
-                      {/* Looptijd */}
-                      <div className="flex items-center justify-between gap-3">
-                        <h3 className="text-xl font-bold font-display">{duration.label[lang]}</h3>
-                        {isPremium && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-extrabold px-2 py-1 rounded-full bg-[#d6bf96]/15 text-[#f6e7c3] border border-[#d6bf96]/40">
-                            <Crown className="w-3 h-3" />
+            <div className="pk-grid">
+              <div className="pk-opts">
+                {PLAN_DURATIONS.map((duration) => {
+                  const isBest = Boolean(duration.note);
+                  return (
+                    <div key={duration.id} className={`pk-opt ${isBest ? 'pk-best' : ''}`}>
+                      <div className="pk-m">
+                        {isBest && isPremium && (
+                          <span className="pk-stamp font-display" aria-hidden="true">
                             VIP
                           </span>
                         )}
-                      </div>
-
-                      {/* Price Block */}
-                      <div className="mt-4 mb-2">
-                        <span
-                          className={`text-4xl sm:text-5xl font-extrabold font-display tabular-nums tracking-tight ${
-                            isPremium ? 'text-gold' : isBest ? 'text-fluid-deep' : 'text-[#0c2017]'
-                          }`}
-                        >
-                          <AnimatedPrice value={price} />
-                        </span>
-                      </div>
-
-                      {/* Monthly breakdown */}
-                      <div
-                        className={`text-sm font-semibold ${
-                          dark ? 'text-[#86efac]' : 'text-[#15803d]'
-                        }`}
-                      >
-                        ≈ <AnimatedPrice value={monthly} /> {t.perMonth}
-                      </div>
-
-                      <div
-                        className={`mt-1.5 mb-6 flex items-center gap-1.5 text-xs font-semibold ${
-                          dark ? 'text-[#c3dccf]' : 'text-[#3b594b]'
-                        }`}
-                      >
-                        <MonitorSmartphone className="w-3.5 h-3.5" />
-                        <span>
+                        {isBest && duration.note && (
+                          <span className="pk-tag">
+                            {duration.note[lang]} · {duration.badge}
+                          </span>
+                        )}
+                        <h3 className="pk-dur">{duration.label[lang]}</h3>
+                        <p className="pk-pm">
+                          {t.thatIs} <AnimatedPrice value={getMonthlyPrice(tierId, duration.id, devices)} /> {t.perMonth}
+                        </p>
+                        <p className="pk-dev">
                           {deviceLabel} {t.included}
-                        </span>
+                        </p>
                       </div>
-
-                      {/* CTA Button */}
-                      <button
-                        data-cta="order"
-                        onClick={() =>
-                          onSelectPlan({ tier: tierId, duration: duration.id, devices })
-                        }
-                        className={`group/cta w-full py-3.5 px-5 rounded-2xl text-sm font-bold transition-all duration-200 active:scale-[0.97] flex items-center justify-center gap-2 cursor-pointer ${
-                          isPremium
-                            ? isBest
-                              ? 'bg-gold-btn text-[#0c2017] shadow-lg shadow-amber-200/25 hover:shadow-xl hover:shadow-amber-200/40'
-                              : 'bg-[#d6bf96]/10 text-[#f6e7c3] border border-[#d6bf96]/60 hover:bg-gold-btn hover:text-[#0c2017]'
-                            : isBest
-                            ? 'bg-fluid-btn shadow-lg shadow-green-600/25 hover:shadow-xl hover:shadow-green-600/40'
-                            : 'bg-[#0f2d1e] hover:bg-[#15803d] text-white'
-                        }`}
-                      >
-                        <OrderIcon className="w-5 h-5 transition-transform group-hover/cta:-translate-x-0.5 group-hover/cta:-rotate-6" />
-                        <span>{isPremium ? t.orderVip : t.order}</span>
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover/cta:translate-x-1" />
-                      </button>
-
-                      {/* Feature Checklist */}
-                      <div className="mt-7 space-y-3.5">
-                        <div
-                          className={`text-xs font-bold ${
-                            dark ? 'text-[#f6e7c3]' : 'text-[#24402f]'
-                          }`}
-                        >
-                          {t.whatsIn(tier.name[lang])}
+                      <div className="pk-st">
+                        <div className="pk-price font-display">
+                          <AnimatedPrice value={getPlanPrice(tierId, duration.id, devices)} />
                         </div>
-
-                        <ul className="space-y-1 text-[13px] sm:text-sm">
-                          {tier.features[lang].map((feat) => (
-                            <li
-                              key={feat}
-                              className={`flex items-start gap-2.5 leading-snug -mx-2 px-2 py-1 rounded-lg transition-colors ${
-                                dark ? 'hover:bg-white/5' : 'hover:bg-[#f1f7f3]'
-                              }`}
-                            >
-                              <Check
-                                className={`w-4 h-4 shrink-0 mt-0.5 ${
-                                  dark ? 'text-[#e9d3a6]' : 'text-[#16a34a]'
-                                }`}
-                              />
-                              <span className={dark ? 'text-[#eef6f1]' : 'text-[#24402f]'}>
-                                {feat}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                        <button
+                          type="button"
+                          data-cta="order"
+                          className="pk-btn"
+                          onClick={() => onSelectPlan({ tier: tierId, duration: duration.id, devices })}
+                        >
+                          {t.choose}
+                        </button>
                       </div>
                     </div>
+                  );
+                })}
+              </div>
 
-                    {/* Card footer trust note */}
-                    <div
-                      className={`relative mt-8 pt-4 border-t text-xs flex items-center gap-2 ${
-                        dark ? 'border-white/15 text-[#c3dccf]' : 'border-[#e6efe9] text-[#3b594b]'
-                      }`}
-                    >
-                      <Shield className="w-3.5 h-3.5 shrink-0" />
-                      <span>{t.guarantee}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              {/* What you get, listed once */}
+              <div className="pk-inc">
+                <h3>{t.whatsIn(tier.name[lang])}</h3>
+                <ul className={allShown ? '' : 'pk-short'}>
+                  {tier.features[lang].map((feat) => (
+                    <li key={feat}>{feat}</li>
+                  ))}
+                </ul>
+                {!allShown && (
+                  <button type="button" className="pk-more" onClick={() => setAllShown(true)}>
+                    {t.allBenefits(tier.features[lang].length)}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
+
+          <p className="pk-back">
+            <Shield className="w-5 h-5 shrink-0" />
+            {t.guarantee}
+          </p>
         </div>
 
         {/* Accepted Payment Methods Strip */}
@@ -496,11 +307,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
         </div>
 
         {/* Personal advice */}
-        <div data-reveal="fade" className="mt-6 text-center text-sm text-[#3b594b]">
+        <div data-reveal="fade" className="pk-advice mt-6 text-center text-base sm:text-lg">
           <span>{t.doubt} </span>
           <button
             onClick={onOpenWhatsApp}
-            className="inline-flex items-center gap-1.5 font-bold text-[#0c9361] hover:text-[#0a7a50] underline underline-offset-4 cursor-pointer"
+            className="inline-flex items-center gap-1.5 font-bold underline underline-offset-4 cursor-pointer"
           >
             <WhatsAppIcon className="w-4 h-4 text-[#25d366]" />
             {t.advice}
