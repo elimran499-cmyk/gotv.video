@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Film, Star, Languages, Play, RefreshCw, ArrowRight } from 'lucide-react';
+import { Film, Languages, Play, RefreshCw, ArrowRight } from 'lucide-react';
 import { MEDIA_ROWS, VOD_COUNT, MediaItem, Lang } from '../data/mockData';
 
 interface MoviesSeriesSectionProps {
@@ -31,7 +31,6 @@ export const MoviesSeriesSection: React.FC<MoviesSeriesSectionProps> = ({
       filters: { all: 'Alles', film: 'Films', serie: 'Series' },
       serie: 'Serie',
       film: 'Film',
-      noRating: 'Nog geen score',
       posterAlt: 'Poster van',
       perks: [
         {
@@ -64,7 +63,6 @@ export const MoviesSeriesSection: React.FC<MoviesSeriesSectionProps> = ({
       filters: { all: 'All', film: 'Movies', serie: 'Series' },
       serie: 'Series',
       film: 'Movie',
-      noRating: 'No score yet',
       posterAlt: 'Poster of',
       perks: [
         {
@@ -97,7 +95,6 @@ export const MoviesSeriesSection: React.FC<MoviesSeriesSectionProps> = ({
       filters: { all: 'Alle', film: 'Filme', serie: 'Serien' },
       serie: 'Serie',
       film: 'Film',
-      noRating: 'Noch keine Wertung',
       posterAlt: 'Poster von',
       perks: [
         {
@@ -233,21 +230,6 @@ export const MoviesSeriesSection: React.FC<MoviesSeriesSectionProps> = ({
                       <h4 className="text-xs sm:text-sm font-bold text-white line-clamp-1 group-hover:text-[#8fe2b7] transition-colors">
                         {item.title}
                       </h4>
-                      <div className="mt-1 flex items-center gap-1.5 text-[11px] text-[#65917a]">
-                        {item.rating ? (
-                          <span className="inline-flex items-center gap-1 font-bold text-amber-300">
-                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                            {item.rating.toFixed(1)}
-                          </span>
-                        ) : (
-                          <span>{t.noRating}</span>
-                        )}
-                        <span>•</span>
-                        <span>{item.year}</span>
-                        <span>•</span>
-                        <span>{item.type === 'serie' ? t.serie : t.film}</span>
-                      </div>
-                      <div className="text-[11px] text-[#558169] truncate">{item.genre}</div>
                     </div>
                   </button>
                 ))}
