@@ -172,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         className={`pointer-events-auto max-w-7xl mx-auto pl-3 pr-2 sm:pl-4 sm:pr-2.5 h-14 sm:h-16 flex items-center justify-between gap-3 rounded-full border transition-all duration-300 ${
           scrolled || mobileMenuOpen
             ? 'nav-glass border-[#d6bf96]/25 shadow-xl shadow-black/40'
-            : 'bg-white/[0.04] border-white/10'
+            : 'nav-glass border-white/10'
         }`}
       >
         {/* Brand Wordmark */}
