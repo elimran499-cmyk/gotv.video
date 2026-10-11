@@ -28,6 +28,7 @@ import {
 } from './data/mockData';
 import { PageIntro } from './components/PageIntro';
 import { BlogPostPage } from './components/BlogPostPage';
+import { PageExtras } from './components/PageExtras';
 import { matchRoute, pagePath, routePath, translatePath } from './seo/routes';
 import { applyHead, buildHead } from './seo/head';
 import { WhatsAppIcon } from './components/WhatsAppIcon';
@@ -38,16 +39,42 @@ import { useCinematicReveal } from './components/useCinematicReveal';
 const isLang = (value: string | null | undefined): value is Lang =>
   LANGS.some((option) => option.code === value);
 
+const LANG_KEY = 'gotv-lang';
+const savedLang = (): Lang | null => {
+  try {
+    const saved = localStorage.getItem(LANG_KEY);
+    return isLang(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+};
+
 /**
  * The address decides the page and its language (/de/preise is German pricing).
- * An old ?lang= link is sent on to the same page in that language; returns
- * true when the browser is on its way there.
+ * Two cases send the visitor to the same page in another language; returns
+ * true when the browser is on its way there:
+ *
+ *  - an old ?lang= link;
+ *  - arriving on a Dutch page (the default) from outside the site, when the
+ *    language they chose before, or else their browser's language, is German
+ *    or English. Search engines are left alone so each language stays indexed
+ *    at its own address.
  */
-export const redirectOldLangLink = (): boolean => {
-  const { pathname, search } = window.location;
-  const wanted = new URLSearchParams(search).get('lang');
+export const redirectToVisitorLanguage = (): boolean => {
+  const { pathname, search, origin } = window.location;
   const route = matchRoute(pathname);
-  if (!isLang(wanted) || wanted === route.lang || route.notFound) return false;
+  if (route.notFound) return false;
+
+  const asked = new URLSearchParams(search).get('lang');
+  let wanted: Lang | null = isLang(asked) ? asked : null;
+  if (!wanted && !asked && route.lang === 'nl') {
+    const crawler =
+      navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|headless|preview|facebookexternalhit|whatsapp/i.test(navigator.userAgent);
+    const fromThisSite = document.referrer.startsWith(origin);
+    const browser = navigator.language.slice(0, 2).toLowerCase();
+    if (!crawler && !fromThisSite) wanted = savedLang() ?? (isLang(browser) ? browser : null);
+  }
+  if (!wanted || wanted === route.lang) return false;
   window.location.replace(translatePath(route, wanted));
   return true;
 };
@@ -68,7 +95,15 @@ export default function App({ path: givenPath }: AppProps) {
     window.scrollTo({ top: 0 });
   };
 
-  const setLang = (next: Lang) => navigate(translatePath(route, next));
+  // Choosing a language is remembered, so the next visit opens in it.
+  const setLang = (next: Lang) => {
+    try {
+      localStorage.setItem(LANG_KEY, next);
+    } catch {
+      /* storage unavailable (private window): the choice just lasts this visit */
+    }
+    navigate(translatePath(route, next));
+  };
 
   // Back and forward buttons, and links between the site's own pages.
   useEffect(() => {
@@ -189,6 +224,7 @@ export default function App({ path: givenPath }: AppProps) {
                 {page === 'guides' && <InstallationGuideSection lang={lang} onExplorePlans={scrollToPricing} onOpenWhatsApp={openWhatsApp} />}
                 {page === 'blog' && <BlogSection lang={lang} />}
                 {page === 'faq' && <FaqSection lang={lang} onOpenWhatsApp={openWhatsApp} />}
+                <PageExtras page={page} lang={lang} />
               </>
             )}
             <CtaBanner lang={lang} onExplorePlans={scrollToPricing} onOpenWhatsApp={openWhatsApp} />

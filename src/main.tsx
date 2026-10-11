@@ -1,9 +1,9 @@
 import {createRoot, hydrateRoot} from 'react-dom/client';
-import App, {redirectOldLangLink} from './App.tsx';
+import App, {redirectToVisitorLanguage} from './App.tsx';
 import './index.css';
 import {trackConversions} from './conversions';
 
-if (!redirectOldLangLink()) {
+if (!redirectToVisitorLanguage()) {
   // Counts WhatsApp and order CTA clicks as Google Ads conversions.
   trackConversions();
 

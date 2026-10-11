@@ -410,6 +410,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
                       {/* CTA Button */}
                       <button
+                        data-cta="order"
                         onClick={() =>
                           onSelectPlan({ tier: tierId, duration: duration.id, devices })
                         }

@@ -33,6 +33,15 @@ export const BlogPostPage: React.FC<BlogPostPageProps> = ({ post, lang, onOpenWh
             <Clock className="w-3 h-3" />
             {post.minutes} {t.min}
           </span>
+          <span className="w-1 h-1 rounded-full bg-[#b7cdbf]" />
+          <time dateTime={post.date} className="font-semibold normal-case tracking-normal text-[#6b8a7a]">
+            {new Date(`${post.date}T12:00:00Z`).toLocaleDateString({ nl: 'nl-NL', en: 'en-GB', de: 'de-DE' }[lang], {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+              timeZone: 'UTC',
+            })}
+          </time>
         </div>
 
         <div className="mt-6 space-y-7">

@@ -2,6 +2,7 @@ import { Lang, Localized } from './mockData';
 import coverSetup from '../assets/images/hero_streaming_mosaic_1791672867195.jpg';
 import coverSpeed from '../assets/images/poster_scifi_portal_1791672878817.jpg';
 import coverSport from '../assets/images/poster_sports_championship_1791672898139.jpg';
+import coverStick from '../assets/images/poster_dark_mystery_1791672889150.jpg';
 
 export interface BlogSection {
   heading: string;
@@ -13,6 +14,8 @@ export interface BlogPost {
   cover: string;
   /** Reading time in minutes. */
   minutes: number;
+  /** Day it was published (YYYY-MM-DD). */
+  date: string;
   category: Localized;
   title: Localized;
   excerpt: Localized;
@@ -24,6 +27,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 'smart-tv-setup',
     cover: coverSetup,
     minutes: 4,
+    date: '2026-10-11',
     category: { nl: 'Handleiding', en: 'Guide', de: 'Anleitung' },
     title: {
       nl: 'IPTV installeren op je Smart TV in 5 minuten',
@@ -96,6 +100,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 'speed-for-4k',
     cover: coverSpeed,
     minutes: 3,
+    date: '2026-10-11',
     category: { nl: 'Internet', en: 'Internet', de: 'Internet' },
     title: {
       nl: 'Welke internetsnelheid heb je nodig voor 4K?',
@@ -156,6 +161,7 @@ export const BLOG_POSTS: BlogPost[] = [
     id: 'fix-buffering',
     cover: coverSport,
     minutes: 4,
+    date: '2026-10-11',
     category: { nl: 'Tips', en: 'Tips', de: 'Tipps' },
     title: {
       nl: 'Hapert het beeld? 5 dingen die je zelf kunt doen',
@@ -232,6 +238,79 @@ export const BLOG_POSTS: BlogPost[] = [
         {
           heading: 'Passiert es weiterhin?',
           text: 'Schreib uns per WhatsApp, welcher Sender es ist, auf welchem Gerät und um welche Uhrzeit. Mit diesen drei Angaben sehen wir schnell, woran es liegt.',
+        },
+      ],
+    },
+  },
+  {
+    id: 'firestick-setup',
+    cover: coverStick,
+    minutes: 4,
+    date: '2026-10-11',
+    category: { nl: 'Handleiding', en: 'Guide', de: 'Anleitung' },
+    title: {
+      nl: 'IPTV installeren op een Amazon Firestick',
+      en: 'How to set up IPTV on an Amazon Firestick',
+      de: 'IPTV auf dem Fire TV Stick einrichten',
+    },
+    excerpt: {
+      nl: 'De Firestick is het populairste apparaat voor IPTV. Zo zet je er in vier stappen een speler-app op.',
+      en: 'The Firestick is the most popular device for IPTV. Here is how to put a player app on it in four steps.',
+      de: 'Der Fire TV Stick ist das beliebteste Gerät für IPTV. So bringst du in vier Schritten eine Player-App darauf.',
+    },
+    body: {
+      nl: [
+        {
+          heading: '1. Installeer de app Downloader',
+          text: 'Ga op het startscherm van je Firestick naar Zoeken en typ "Downloader". Installeer de app met het oranje pictogram uit de Amazon Appstore. Hiermee haal je straks de speler-app binnen, want de meeste IPTV-spelers staan niet in de Appstore zelf.',
+        },
+        {
+          heading: '2. Sta installeren toe',
+          text: 'Open Instellingen, kies Mijn Fire TV en daarna Opties voor ontwikkelaars. Zet bij "Onbekende apps installeren" de schakelaar voor Downloader aan. Zie je de ontwikkelaarsopties niet? Ga naar Mijn Fire TV, Over, en druk zeven keer op de naam van je apparaat.',
+        },
+        {
+          heading: '3. Download de speler-app',
+          text: 'Open Downloader en vul de link in die je van onze support krijgt voor de speler die bij je past, bijvoorbeeld IPTV Smarters of TiviMate. Kies Installeren zodra het downloaden klaar is en verwijder daarna het installatiebestand om ruimte vrij te houden.',
+        },
+        {
+          heading: '4. Log in en kijk',
+          text: 'Start de speler-app, kies voor inloggen met Xtream Codes en vul de servernaam, gebruikersnaam en het wachtwoord in die je na je bestelling hebt ontvangen. De zenderlijst en de tv-gids laden de eerste keer een minuut of twee. Sluit de Firestick bij voorkeur aan op de 5 GHz wifi of gebruik een ethernetadapter voor het stabielste beeld.',
+        },
+      ],
+      en: [
+        {
+          heading: '1. Install the Downloader app',
+          text: 'On the Firestick home screen, go to Find and type "Downloader". Install the app with the orange icon from the Amazon Appstore. You use it to fetch the player app, because most IPTV players are not in the Appstore itself.',
+        },
+        {
+          heading: '2. Allow the installation',
+          text: 'Open Settings, choose My Fire TV and then Developer options. Under "Install unknown apps", switch Downloader on. If you do not see the developer options, go to My Fire TV, About, and press the name of your device seven times.',
+        },
+        {
+          heading: '3. Download the player app',
+          text: 'Open Downloader and enter the link our support sends you for the player that suits you, for example IPTV Smarters or TiviMate. Choose Install when the download finishes, then delete the installer file to keep space free.',
+        },
+        {
+          heading: '4. Log in and watch',
+          text: 'Start the player app, choose to log in with Xtream Codes and enter the server name, username and password you received after ordering. The channel list and TV guide take a minute or two to load the first time. Connect the Firestick to 5 GHz wifi if you can, or use an ethernet adapter for the most stable picture.',
+        },
+      ],
+      de: [
+        {
+          heading: '1. Die App Downloader installieren',
+          text: 'Gehe auf dem Startbildschirm deines Fire TV Sticks auf Suchen und gib "Downloader" ein. Installiere die App mit dem orangefarbenen Symbol aus dem Amazon Appstore. Damit holst du später die Player-App, denn die meisten IPTV-Player gibt es nicht im Appstore selbst.',
+        },
+        {
+          heading: '2. Installation erlauben',
+          text: 'Öffne Einstellungen, wähle Mein Fire TV und dann Entwickleroptionen. Schalte unter "Unbekannte Apps installieren" den Schalter für Downloader ein. Siehst du die Entwickleroptionen nicht? Gehe zu Mein Fire TV, Info, und drücke siebenmal auf den Namen deines Geräts.',
+        },
+        {
+          heading: '3. Die Player-App herunterladen',
+          text: 'Öffne Downloader und gib den Link ein, den du von unserem Support für den passenden Player bekommst, zum Beispiel IPTV Smarters oder TiviMate. Wähle Installieren, sobald der Download fertig ist, und lösche danach die Installationsdatei, um Speicher freizuhalten.',
+        },
+        {
+          heading: '4. Anmelden und schauen',
+          text: 'Starte die Player-App, wähle die Anmeldung mit Xtream Codes und gib Servername, Benutzername und Passwort ein, die du nach der Bestellung erhalten hast. Senderliste und TV-Guide laden beim ersten Mal ein bis zwei Minuten. Verbinde den Fire TV Stick möglichst mit dem 5-GHz-WLAN oder nutze einen Ethernet-Adapter für das stabilste Bild.',
         },
       ],
     },

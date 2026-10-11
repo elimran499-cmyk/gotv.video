@@ -140,6 +140,8 @@ const structuredData = (route: Route): object[] => {
       description: route.post.excerpt[lang],
       image: absoluteUrl(route.post.cover),
       inLanguage: lang,
+      datePublished: route.post.date,
+      dateModified: route.post.date,
       mainEntityOfPage: url,
       author: { '@id': org['@id'] },
       publisher: { '@id': org['@id'] },
@@ -152,7 +154,7 @@ const structuredData = (route: Route): object[] => {
 export const buildHead = (route: Route): Head => {
   const copy = copyFor(route);
   const url = absoluteUrl(routePath(route));
-  const image = route.post ? absoluteUrl(route.post.cover) : absoluteUrl('/logo.png');
+  const image = route.post ? absoluteUrl(route.post.cover) : absoluteUrl('/og-image.jpg');
   const meta = (attrs: Record<string, string>): HeadTag => ({ tag: 'meta', attrs });
   const link = (attrs: Record<string, string>): HeadTag => ({ tag: 'link', attrs });
 
@@ -182,7 +184,7 @@ export const buildHead = (route: Route): Head => {
       meta({ property: 'og:url', content: url }),
       meta({ property: 'og:image', content: image }),
       meta({ property: 'og:locale', content: OG_LOCALE[route.lang] }),
-      meta({ name: 'twitter:card', content: route.post ? 'summary_large_image' : 'summary' }),
+      meta({ name: 'twitter:card', content: 'summary_large_image' }),
       meta({ name: 'twitter:title', content: copy.title }),
       meta({ name: 'twitter:description', content: copy.description }),
       meta({ name: 'twitter:image', content: image }),
