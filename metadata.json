@@ -1,0 +1,6 @@
+{
+  "name": "GOTV | Premium IPTV Nederland - 4K TV & Live Sport",
+  "description": "GOTV IPTV — 80.000+ live zenders en 200.000+ films & series in 4K op al je apparaten. Nederlandse zenders, Viaplay, Ziggo Sport en ESPN. Direct actief, zonder contract.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

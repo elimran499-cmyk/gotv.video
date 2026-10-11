@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="nl" class="scroll-smooth">
+  <head>
+    <!-- Google tag (gtag.js). The inline stub defines gtag() and queues calls
+         into dataLayer, so a conversion fired before the remote tag lands is
+         kept and replayed. gtag.js itself is deferred until the visitor shows
+         intent or the page finishes loading, whichever comes first. -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'AW-18345460239');
+
+      (function () {
+        var loaded = false;
+        function loadGtag() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=AW-18345460239';
+          document.head.appendChild(s);
+        }
+        var events = ['pointerdown', 'keydown', 'touchstart', 'scroll'];
+        events.forEach(function (e) {
+          window.addEventListener(e, loadGtag, {once: true, passive: true, capture: true});
+        });
+        if (document.readyState === 'complete') loadGtag();
+        else window.addEventListener('load', loadGtag, {once: true});
+      })();
+    </script>
+
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--seo-head-->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#07140e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-[#07140e] text-[#e3ece7] antialiased selection:bg-[#22c55e]/20 selection:text-[#4ade80]">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
