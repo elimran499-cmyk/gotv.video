@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Shield, Crown, Tv, Film, Sparkles, Trophy, ShieldCheck, Headset, Zap } from 'lucide-react';
+import { Shield, Crown, ArrowRight, Check, MonitorSmartphone } from 'lucide-react';
 import { WhatsAppIcon } from './WhatsAppIcon';
 import {
   PLAN_DURATIONS,
   PLAN_TIERS,
-  TIER_STATS,
   DEVICE_OPTIONS,
   DEFAULT_PLAN,
   getPlanPrice,
@@ -22,26 +21,6 @@ interface PricingSectionProps {
 }
 
 const TIER_IDS: PlanTierId[] = ['basis', 'premium'];
-
-/** The six things a pack comes with, shown as tiles above the prices. */
-const HIGHLIGHTS: Record<PlanTierId, { icon: typeof Tv; value: Record<Lang, string>; label: Record<Lang, string> }[]> = {
-  premium: [
-    { icon: Tv, value: { nl: TIER_STATS.premium.channels, en: TIER_STATS.premium.channels, de: TIER_STATS.premium.channels }, label: { nl: 'live zenders', en: 'live channels', de: 'Live-Sender' } },
-    { icon: Film, value: { nl: TIER_STATS.premium.vod, en: TIER_STATS.premium.vod, de: TIER_STATS.premium.vod }, label: { nl: 'films & series', en: 'movies & series', de: 'Filme & Serien' } },
-    { icon: Sparkles, value: { nl: '4K · 8K · HDR', en: '4K · 8K · HDR', de: '4K · 8K · HDR' }, label: { nl: 'beeldkwaliteit', en: 'picture quality', de: 'Bildqualität' } },
-    { icon: Trophy, value: { nl: 'Alle sport', en: 'All sports', de: 'Aller Sport' }, label: { nl: 'PPV-evenementen inbegrepen', en: 'PPV events included', de: 'PPV-Events inklusive' } },
-    { icon: ShieldCheck, value: { nl: 'VPN', en: 'VPN', de: 'VPN' }, label: { nl: 'inbegrepen', en: 'included', de: 'inklusive' } },
-    { icon: Headset, value: { nl: 'VIP', en: 'VIP', de: 'VIP' }, label: { nl: 'persoonlijke accountmanager', en: 'personal account manager', de: 'persönlicher Account-Manager' } },
-  ],
-  basis: [
-    { icon: Tv, value: { nl: TIER_STATS.basis.channels, en: TIER_STATS.basis.channels, de: TIER_STATS.basis.channels }, label: { nl: 'live zenders', en: 'live channels', de: 'Live-Sender' } },
-    { icon: Film, value: { nl: TIER_STATS.basis.vod, en: TIER_STATS.basis.vod, de: TIER_STATS.basis.vod }, label: { nl: 'films & series', en: 'movies & series', de: 'Filme & Serien' } },
-    { icon: Sparkles, value: { nl: 'Full HD', en: 'Full HD', de: 'Full HD' }, label: { nl: 'SD, HD en Full HD', en: 'SD, HD and Full HD', de: 'SD, HD und Full HD' } },
-    { icon: Trophy, value: { nl: 'Sport', en: 'Sports', de: 'Sport' }, label: { nl: 'ESPN, Ziggo en Viaplay', en: 'ESPN, Ziggo and Viaplay', de: 'ESPN, Ziggo und Viaplay' } },
-    { icon: Zap, value: { nl: 'Anti-Freeze', en: 'Anti-Freeze', de: 'Anti-Freeze' }, label: { nl: 'technologie', en: 'technology', de: 'Technologie' } },
-    { icon: Headset, value: { nl: '24/7', en: '24/7', de: '24/7' }, label: { nl: 'support', en: 'support', de: 'Support' } },
-  ],
-};
 
 /** Counts smoothly from the previous amount to the new one when a price changes. */
 const useAnimatedNumber = (value: number, duration = 450): number => {
@@ -85,7 +64,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const [tierId, setTierId] = useState<PlanTierId>(DEFAULT_PLAN.tier);
   const [devices, setDevices] = useState<number>(DEFAULT_PLAN.devices);
 
-  // The full list of benefits opens on request; the tiles above the prices carry the main ones.
+  // Phones show the first benefits in each card until asked for the rest.
   const [allShown, setAllShown] = useState(false);
 
   const t = {
@@ -187,7 +166,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div data-reveal className="text-center max-w-3xl mx-auto mb-8 sm:mb-10">
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight font-display [text-wrap:balance]">
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight font-display [text-wrap:balance]">
             {t.titleStart}
             <span className="text-fluid-deep">{t.titleAccent}</span>
             {t.titleEnd}
@@ -215,8 +194,11 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                   aria-pressed={count === devices}
                   aria-label={`${count} ${count === 1 ? t.device : t.devices}`}
                 >
+                  <MonitorSmartphone className="w-4 h-4" />
                   {count}
-                  {count === devices && ` ${count === 1 ? t.deviceLower : t.devicesLower}`}
+                  <span className={count === devices ? '' : 'hidden lg:inline'}>
+                    {count === 1 ? t.deviceLower : t.devicesLower}
+                  </span>
                 </button>
               ))}
             </div>
@@ -225,95 +207,80 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
           {/* Premium VIP gets a stage of its own */}
           <div className={`pk-stage ${isPremium ? 'pk-vip' : 'pk-basis'}`}>
             {isPremium && (
-              <>
-                <div className="pk-head">
-                  <span className="pk-crown">
-                    <Crown className="w-8 h-8" />
-                  </span>
-                  <div>
-                    <h3>{t.tiers.premium}</h3>
-                    <p>{t.vipTagline}</p>
-                  </div>
+              <div className="pk-head">
+                <span className="pk-crown">
+                  <Crown className="w-7 h-7" />
+                </span>
+                <div>
+                  <h3>{t.tiers.premium}</h3>
+                  <p>{t.vipTagline}</p>
                 </div>
-              </>
+              </div>
             )}
 
-            {/* What you get, before the prices */}
-            <div className="pk-inc">
-              <h3>{t.whatsIn(tier.name[lang])}</h3>
-              <div className="pk-tiles">
-                {HIGHLIGHTS[tierId].map((item) => (
-                  <div key={item.label[lang]} className="pk-tile">
-                    <span className="pk-ico">
-                      <item.icon className="w-6 h-6" />
-                    </span>
-                    <b className="font-display">{item.value[lang]}</b>
-                    <span className="pk-lbl">{item.label[lang]}</span>
-                  </div>
-                ))}
-              </div>
-              {allShown ? (
-                <ul>
-                  {tier.features[lang].map((feat) => (
-                    <li key={feat}>{feat}</li>
-                  ))}
-                </ul>
-              ) : (
-                <button type="button" className="pk-more" onClick={() => setAllShown(true)}>
-                  {t.allBenefits(tier.features[lang].length)}
-                </button>
-              )}
-            </div>
-
-            <div className="pk-grid">
-              <div className="pk-opts">
-                {PLAN_DURATIONS.map((duration) => {
-                  const isBest = Boolean(duration.note);
-                  return (
-                    <div key={duration.id} className={`pk-opt ${isBest ? 'pk-best' : ''}`}>
-                      <div className="pk-m">
-                        {isBest && isPremium && (
-                          <span className="pk-stamp font-display" aria-hidden="true">
-                            VIP
-                          </span>
-                        )}
-                        {isBest && duration.note && (
-                          <span className="pk-tag">
-                            {duration.note[lang]} · {duration.badge}
-                          </span>
-                        )}
-                        <h3 className="pk-dur">{duration.label[lang]}</h3>
-                        <p className="pk-pm">
-                          {t.thatIs} <AnimatedPrice value={getMonthlyPrice(tierId, duration.id, devices)} /> {t.perMonth}
-                        </p>
-                        <p className="pk-dev">
-                          {deviceLabel} {t.included}
-                        </p>
-                      </div>
-                      <div className="pk-st">
-                        <div className="pk-price font-display">
-                          <AnimatedPrice value={getPlanPrice(tierId, duration.id, devices)} />
-                        </div>
-                        <button
-                          type="button"
-                          data-cta="order"
-                          className="pk-btn"
-                          onClick={() => onSelectPlan({ tier: tierId, duration: duration.id, devices })}
-                        >
-                          {t.choose}
-                        </button>
-                      </div>
+            {/* One card per term; each says what you get */}
+            <div className="pk-cards">
+              {PLAN_DURATIONS.map((duration) => {
+                const isBest = Boolean(duration.note);
+                return (
+                  <div key={duration.id} className={`pk-card ${isBest ? 'pk-best' : ''}`}>
+                    {isBest && duration.note && (
+                      <span className="pk-tag">
+                        {duration.note[lang]} · {duration.badge}
+                      </span>
+                    )}
+                    <h3 className="pk-dur">{duration.label[lang]}</h3>
+                    <div className="pk-price font-display">
+                      <AnimatedPrice value={getPlanPrice(tierId, duration.id, devices)} />
                     </div>
-                  );
-                })}
-              </div>
+                    <p className="pk-pm">
+                      {t.thatIs} <AnimatedPrice value={getMonthlyPrice(tierId, duration.id, devices)} /> {t.perMonth}
+                    </p>
+                    <p className="pk-dev">
+                      <MonitorSmartphone className="w-4 h-4" />
+                      {deviceLabel} {t.included}
+                    </p>
+                    <button
+                      type="button"
+                      data-cta="order"
+                      className="pk-btn"
+                      onClick={() => onSelectPlan({ tier: tierId, duration: duration.id, devices })}
+                    >
+                      {t.choose}
+                      <ArrowRight className="w-5 h-5" />
+                    </button>
+
+                    <div className="pk-inc">
+                      <h4>
+                        <span className="pk-chip">{tier.label}</span>
+                        {t.whatsIn(tier.name[lang])}
+                      </h4>
+                      <ul className={allShown ? '' : 'pk-short'}>
+                        {tier.features[lang].map((feat) => (
+                          <li key={feat}>
+                            <span className="pk-check">
+                              <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                            </span>
+                            {feat}
+                          </li>
+                        ))}
+                      </ul>
+                      {!allShown && (
+                        <button type="button" className="pk-more" onClick={() => setAllShown(true)}>
+                          {t.allBenefits(tier.features[lang].length)}
+                        </button>
+                      )}
+                    </div>
+
+                    <p className="pk-back">
+                      <Shield className="w-4 h-4 shrink-0" />
+                      {t.guarantee}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
-
-          <p className="pk-back">
-            <Shield className="w-5 h-5 shrink-0" />
-            {t.guarantee}
-          </p>
         </div>
 
         {/* Accepted Payment Methods Strip */}
