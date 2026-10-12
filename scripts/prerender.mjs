@@ -12,7 +12,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const DIST = join(ROOT, 'dist');
 const SSR = join(ROOT, 'dist-ssr');
 
-const { pages, notFoundPage, siteUrl } = await import(pathToFileURL(join(SSR, 'entry-server.js')).href);
+const { pages, notFoundPage, siteUrl, siteIndexed } = await import(pathToFileURL(join(SSR, 'entry-server.js')).href);
 const template = readFileSync(join(DIST, 'index.html'), 'utf8');
 for (const marker of ['<!--seo-head-->', '<div id="root"></div>', '<html lang="nl"']) {
   if (!template.includes(marker)) throw new Error(`index.html is missing ${marker}`);
@@ -49,8 +49,9 @@ const sitemap = [
   '</urlset>',
   '',
 ].join('\n');
-writeFileSync(join(DIST, 'sitemap.xml'), sitemap);
-writeFileSync(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+// A site kept out of search engines offers no sitemap; its pages stay readable so the noindex tag is seen.
+if (siteIndexed) writeFileSync(join(DIST, 'sitemap.xml'), sitemap);
+writeFileSync(join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\n${siteIndexed ? `\nSitemap: ${siteUrl}/sitemap.xml\n` : ''}`);
 
 rmSync(SSR, { recursive: true, force: true });
-console.log(`Pre-rendered ${all.length} pages, sitemap.xml and robots.txt for ${siteUrl}`);
+console.log(`Pre-rendered ${all.length} pages${siteIndexed ? ', sitemap.xml' : ' (hidden from search engines)'} and robots.txt for ${siteUrl}`);

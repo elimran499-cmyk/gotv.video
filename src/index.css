@@ -709,6 +709,21 @@ body {
 .pk-pay-list span { padding: 0.5rem 0.9rem; border-radius: 0.75rem; background: var(--pk-stage-solid); border: 1px solid var(--pk-line); color: var(--pk-ink); font-size: 1rem; font-weight: 700; }
 .pk-pay-s { margin-top: 0.875rem; font-size: 0.9375rem; }
 
+/* Phones: the total and the button, in the bottom menu's place while choosing */
+.pk-bar {
+  position: fixed; left: 0.75rem; right: 0.75rem; bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); z-index: 45;
+  display: flex; align-items: center; gap: 0.625rem; padding: 0.5rem 0.5rem 0.5rem 1.125rem; border-radius: min(var(--pk-r), 2.25rem);
+  background: var(--pk-sum-bg); color: var(--pk-sum-ink); box-shadow: 0 18px 40px -12px rgba(0, 0, 0, 0.65), inset 0 0 0 1px var(--pk-sum-line);
+  transform: translateY(170%); opacity: 0; pointer-events: none; transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease;
+}
+.pk-bar[data-on='true'] { transform: none; opacity: 1; pointer-events: auto; }
+.pk-bar-txt { flex: none; }
+.pk-bar-price { font-size: 1.5rem; font-weight: 800; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.pk-bar-name { margin-top: 0.2rem; font-size: 0.9375rem; white-space: nowrap; color: var(--pk-sum-soft); }
+.pk-bar .pk-btn { flex: 1; width: auto; min-height: 3.5rem; margin-top: 0; padding: 0 0.75rem; font-size: 1.125rem; white-space: nowrap; box-shadow: none; }
+.pk-bar-wa { flex: none; display: grid; place-items: center; width: 3.5rem; height: 3.5rem; border-radius: var(--pk-r); background: #25d366; color: #ffffff; cursor: pointer; }
+html[data-pack-bar] .mobile-nav { translate: -50% 170%; opacity: 0; pointer-events: none; }
+
 @media (max-width: 1023px) {
   .pk-short li:nth-child(n + 7) { display: none; }
 }
@@ -730,7 +745,8 @@ body {
   .pk-devbtn { flex-direction: row; gap: 0.5rem; min-height: 4rem; }
   .pk-devbtn span { margin-top: 0; font-size: 1.0625rem; }
   .pk-sum { position: sticky; top: 6.5rem; margin-top: 0; padding: 1.75rem; }
+  .pk-bar { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pk-pass, .pk-pass-vip[aria-checked='true']::after { transition: none; animation: none; }
+  .pk-pass, .pk-pass-vip[aria-checked='true']::after, .pk-bar { transition: none; animation: none; }
 }

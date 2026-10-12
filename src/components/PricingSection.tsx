@@ -71,6 +71,44 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   // Phones show the first benefits of the chosen pack until asked for the rest.
   const [allShown, setAllShown] = useState(false);
 
+  // Phones: a bar with the total and the button shows while the chooser is on
+  // screen and the summary's own button is not; it takes the bottom menu's place.
+  const stageRef = useRef<HTMLDivElement>(null);
+  const orderRef = useRef<HTMLButtonElement>(null);
+  const [barOn, setBarOn] = useState(false);
+  useEffect(() => {
+    const stage = stageRef.current;
+    const button = orderRef.current;
+    if (!stage || !button || typeof IntersectionObserver === 'undefined') return;
+    let choosing = false;
+    let buttonSeen = false;
+    const update = () => setBarOn(choosing && !buttonSeen);
+    const onStage = new IntersectionObserver(
+      ([entry]) => {
+        choosing = entry.isIntersecting;
+        update();
+      },
+      { rootMargin: '-45% 0px -45% 0px' }
+    );
+    const onButton = new IntersectionObserver(
+      ([entry]) => {
+        buttonSeen = entry.isIntersecting;
+        update();
+      },
+      { rootMargin: '0px 0px -88px 0px' }
+    );
+    onStage.observe(stage);
+    onButton.observe(button);
+    return () => {
+      onStage.disconnect();
+      onButton.disconnect();
+    };
+  }, []);
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-pack-bar', barOn);
+    return () => document.documentElement.removeAttribute('data-pack-bar');
+  }, [barOn]);
+
   const t = {
     nl: {
       titleStart: 'Kies het pakket dat bij ',
@@ -180,6 +218,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
   const isPremium = tierId === 'premium';
   const duration = PLAN_DURATIONS.find((d) => d.id === durationId) ?? PLAN_DURATIONS[0];
   const deviceLabel = `${devices} ${devices === 1 ? t.deviceLower : t.devicesLower}`;
+  const order = () => onSelectPlan({ tier: tierId, duration: durationId, devices });
   const cheapest = (id: PlanTierId) => Math.min(...PLAN_DURATIONS.map((d) => getPlanPrice(id, d.id, 1)));
 
   return (
@@ -197,7 +236,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
 
         {/* Three choices on the left, the total on the right (below, on phones) */}
         <div className="pk">
-          <div className={`pk-stage ${isPremium ? 'pk-vip' : 'pk-basis'}`}>
+          <div ref={stageRef} className={`pk-stage ${isPremium ? 'pk-vip' : 'pk-basis'}`}>
             <div className="pk-main">
               {/* 1. The pack: two passes side by side, so the difference is plain */}
               <div className="pk-step">
@@ -356,12 +395,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
               <p className="pk-total-pm">
                 {t.thatIs} <AnimatedPrice value={getMonthlyPrice(tierId, durationId, devices)} /> {t.perMonth}
               </p>
-              <button
-                type="button"
-                data-cta="order"
-                className="pk-btn"
-                onClick={() => onSelectPlan({ tier: tierId, duration: durationId, devices })}
-              >
+              <button ref={orderRef} type="button" data-cta="order" className="pk-btn" onClick={order}>
                 {t.choose}
                 <ArrowRight className="w-5 h-5" />
               </button>
@@ -370,6 +404,28 @@ export const PricingSection: React.FC<PricingSectionProps> = ({
                 {t.guarantee}
               </p>
             </aside>
+          </div>
+
+          {/* Phones: the total and the button stay within reach while choosing */}
+          <div className="pk-bar" data-on={barOn} aria-hidden={!barOn}>
+            <div className="pk-bar-txt">
+              <div className="pk-bar-price font-display">
+                <AnimatedPrice value={getPlanPrice(tierId, durationId, devices)} />
+              </div>
+              <div className="pk-bar-name">{t.tiers[tierId]}</div>
+            </div>
+            <button type="button" data-cta="order" className="pk-btn" tabIndex={barOn ? 0 : -1} onClick={order}>
+              {t.choose}
+            </button>
+            <button
+              type="button"
+              className="pk-bar-wa"
+              tabIndex={barOn ? 0 : -1}
+              onClick={onOpenWhatsApp}
+              aria-label={{ nl: 'Contact via WhatsApp', en: 'Contact via WhatsApp', de: 'Kontakt per WhatsApp' }[lang]}
+            >
+              <WhatsAppIcon className="w-6 h-6" />
+            </button>
           </div>
         </div>
 

@@ -11,6 +11,7 @@ import { BLOG_POSTS } from '../data/blogPosts';
 import {
   ROUTE_LANGS,
   Route,
+  SITE_INDEXED,
   SITE_NAME,
   absoluteUrl,
   copyFor,
@@ -171,7 +172,10 @@ export const buildHead = (route: Route): Head => {
     lang: route.lang,
     tags: [
       meta({ name: 'description', content: copy.description }),
-      meta({ name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1' }),
+      meta({
+        name: 'robots',
+        content: SITE_INDEXED ? 'index, follow, max-image-preview:large, max-snippet:-1' : 'noindex, nofollow',
+      }),
       link({ rel: 'canonical', href: url }),
       ...ROUTE_LANGS.map((lang) =>
         link({ rel: 'alternate', hreflang: lang, href: absoluteUrl(translatePath(route, lang)) })

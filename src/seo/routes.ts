@@ -11,6 +11,8 @@ import { BLOG_POSTS, BlogPost } from '../data/blogPosts';
 
 /** The address the site is served on. Canonical links and the sitemap use it. */
 export const SITE_URL = 'https://gotv.video';
+/** False keeps every page out of search engines: for a site still on a placeholder address. */
+export const SITE_INDEXED = true;
 export const SITE_NAME = 'GOTV';
 
 export type PageId = 'home' | 'channels' | 'movies' | 'pricing' | 'features' | 'guides' | 'blog' | 'faq';

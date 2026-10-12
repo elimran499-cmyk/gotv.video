@@ -46,7 +46,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ lang, page, onOpenWhatsApp
   return (
     <nav
       aria-label={{ nl: 'Hoofdnavigatie', en: 'Main navigation', de: 'Hauptnavigation' }[lang]}
-      className="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1.5 rounded-full bg-[#07140e]/90 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/50"
+      className="mobile-nav lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-40 transition-[translate,opacity] duration-300 flex items-center gap-1 p-1.5 rounded-full bg-[#07140e]/90 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/50"
       style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       {ITEMS.map((item) => {

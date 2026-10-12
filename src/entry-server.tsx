@@ -1,7 +1,7 @@
 import { renderToString } from 'react-dom/server';
 import App from './App';
 import { buildHead, headHtml } from './seo/head';
-import { ROUTE_LANGS, Route, SITE_URL, absoluteUrl, allRoutes, matchRoute, routePath, translatePath } from './seo/routes';
+import { ROUTE_LANGS, Route, SITE_INDEXED, SITE_URL, absoluteUrl, allRoutes, matchRoute, routePath, translatePath } from './seo/routes';
 
 /**
  * Draws every page ahead of time, so each address is a complete HTML page with
@@ -18,5 +18,6 @@ const draw = (route: Route, path: string) => ({
 });
 
 export const siteUrl = SITE_URL;
+export const siteIndexed = SITE_INDEXED;
 export const pages = () => allRoutes().map((route) => draw(route, routePath(route)));
 export const notFoundPage = () => draw(matchRoute('/404-not-found'), '/404-not-found');
