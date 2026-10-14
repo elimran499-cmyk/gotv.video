@@ -1,8 +1,8 @@
 import { Lang, Localized } from './mockData';
-import coverSetup from '../assets/images/hero_streaming_mosaic_1791672867195.jpg';
-import coverSpeed from '../assets/images/poster_scifi_portal_1791672878817.jpg';
-import coverSport from '../assets/images/poster_sports_championship_1791672898139.jpg';
-import coverStick from '../assets/images/poster_dark_mystery_1791672889150.jpg';
+import coverSetup from '../assets/images/blog_smart-tv-setup.jpg';
+import coverSpeed from '../assets/images/blog_speed-for-4k.jpg';
+import coverSport from '../assets/images/blog_fix-buffering.jpg';
+import coverStick from '../assets/images/blog_firestick-setup.jpg';
 
 export interface BlogSection {
   heading: string;

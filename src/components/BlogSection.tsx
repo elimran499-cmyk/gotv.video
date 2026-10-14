@@ -52,6 +52,8 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ lang }) => {
   }[lang];
 
   const [lead, ...rest] = BLOG_POSTS;
+  // a single article beside the big one gets its picture on top, at full width, instead of a narrow strip at the side
+  const single = rest.length === 1;
 
   return (
     <section id="blog" className="fluid-light py-16 lg:py-24 border-b border-[#dbe8df]">
@@ -118,9 +120,9 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ lang }) => {
                 data-reveal
                 style={{ '--reveal-delay': `${(idx + 1) * 110}ms` } as React.CSSProperties}
                 href={postPath(post, lang)}
-                className="group flex lg:flex-row flex-col gap-4 sm:gap-5 p-3 rounded-[1.75rem] bg-white border border-[#dbe8df] text-left shadow-xs hover:shadow-lg hover:border-[#bcd9c6] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                className={`group flex ${single ? '' : 'lg:flex-row'} flex-col gap-4 sm:gap-5 p-3 rounded-[1.75rem] bg-white border border-[#dbe8df] text-left shadow-xs hover:shadow-lg hover:border-[#bcd9c6] hover:-translate-y-1 transition-all duration-300 cursor-pointer`}
               >
-                <div className="relative lg:w-40 shrink-0 aspect-[16/10] lg:aspect-auto rounded-[1.25rem] overflow-hidden bg-[#0c2017]">
+                <div className={`relative ${single ? '' : 'lg:w-40 lg:aspect-auto'} shrink-0 aspect-[16/10] rounded-[1.25rem] overflow-hidden bg-[#0c2017]`}>
                   <img
                     src={post.cover}
                     alt={post.title[lang]}
@@ -128,7 +130,7 @@ export const BlogSection: React.FC<BlogSectionProps> = ({ lang }) => {
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>
-                <div className="flex-1 min-w-0 flex flex-col px-2 lg:px-0 lg:py-2 lg:pr-3 pb-3">
+                <div className={`flex-1 min-w-0 flex flex-col px-2 pb-3 ${single ? '' : 'lg:px-0 lg:py-2 lg:pr-3'}`}>
                   <div className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider text-[#15803d]">
                     <span>{post.category[lang]}</span>
                     <span className="w-1 h-1 rounded-full bg-[#b7cdbf]" />
