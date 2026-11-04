@@ -1337,7 +1337,7 @@ export const FAQS: FaqItem[] = [
 /* ------------------------------------------------------------------ */
 
 /** Number in international format without + or spaces. */
-export const WHATSAPP_NUMBER = '447449708976';
+export const WHATSAPP_NUMBER = '447832486269';
 
 export const whatsappLink = (message: string): string =>
   `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
